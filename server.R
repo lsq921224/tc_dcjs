@@ -17,6 +17,12 @@ shinyServer(function(input, output) {
 		getPage()
 	})
 
+	output$sortable_rui <- renderUI(
+	{
+		returnOrder("sortable", input$choose_status)
+	}
+	)
+
 	#output$showorder <- renderPrint(
 	#{
 	#	print(paste0(getwd(),"/data/o.Rhtml"))
