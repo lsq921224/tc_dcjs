@@ -1,0 +1,1146 @@
+<html>
+<meta charset="utf-8">
+<head>
+<style type="text/css">
+.knitr .inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+}
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.rimage .left {
+  text-align: left;
+}
+.rimage .right {
+  text-align: right;
+}
+.rimage .center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+  <link rel="stylesheet" href="css/dc.css"/>
+
+  <script src="js/d3.v3.js"></script>
+  <script src="js/crossfilter.js"></script>
+  <script src="js/dc.js"></script>
+</head>
+
+<body>
+<h1>Signal Analysis with dc.js & crossfilter</h1>
+
+<div id = "bar-count"><p>Signal Histogram</p></div>
+<div id = "line-perf"><p>Average Return By Signal</p></div>
+<div id = "line-year"><p>Count By Year</p></div>
+
+<script>
+var spx = 
+[
+ {
+ "date":  16437,
+"name": "GSPC.Close",
+"price": 2058.2,
+"rsi": null,
+"ret": null 
+},
+{
+ "date":  16440,
+"name": "GSPC.Close",
+"price": 2020.6,
+"rsi": null,
+"ret": -0.018278 
+},
+{
+ "date":  16441,
+"name": "GSPC.Close",
+"price": 2002.6,
+"rsi": null,
+"ret": -0.0088935 
+},
+{
+ "date":  16442,
+"name": "GSPC.Close",
+"price": 2025.9,
+"rsi": null,
+"ret": 0.01163 
+},
+{
+ "date":  16443,
+"name": "GSPC.Close",
+"price": 2062.1,
+"rsi": null,
+"ret": 0.017888 
+},
+{
+ "date":  16444,
+"name": "GSPC.Close",
+"price": 2044.8,
+"rsi": null,
+"ret": -0.0084038 
+},
+{
+ "date":  16447,
+"name": "GSPC.Close",
+"price": 2028.3,
+"rsi": null,
+"ret": -0.0080937 
+},
+{
+ "date":  16448,
+"name": "GSPC.Close",
+"price":   2023,
+"rsi": null,
+"ret": -0.0025786 
+},
+{
+ "date":  16449,
+"name": "GSPC.Close",
+"price": 2011.3,
+"rsi": null,
+"ret": -0.0058131 
+},
+{
+ "date":  16450,
+"name": "GSPC.Close",
+"price": 1992.7,
+"rsi": null,
+"ret": -0.0092479 
+},
+{
+ "date":  16451,
+"name": "GSPC.Close",
+"price": 2019.4,
+"rsi": null,
+"ret": 0.013424 
+},
+{
+ "date":  16455,
+"name": "GSPC.Close",
+"price": 2022.6,
+"rsi": null,
+"ret": 0.00155 
+},
+{
+ "date":  16456,
+"name": "GSPC.Close",
+"price": 2032.1,
+"rsi": null,
+"ret": 0.0047316 
+},
+{
+ "date":  16457,
+"name": "GSPC.Close",
+"price": 2063.1,
+"rsi": null,
+"ret": 0.01527 
+},
+{
+ "date":  16458,
+"name": "GSPC.Close",
+"price": 2051.8,
+"rsi": null,
+"ret": -0.0054915 
+},
+{
+ "date":  16461,
+"name": "GSPC.Close",
+"price": 2057.1,
+"rsi": 48.803,
+"ret": 0.0025685 
+},
+{
+ "date":  16462,
+"name": "GSPC.Close",
+"price": 2029.6,
+"rsi": 49.871,
+"ret": -0.013388 
+},
+{
+ "date":  16463,
+"name": "GSPC.Close",
+"price": 2002.2,
+"rsi": 44.631,
+"ret": -0.013496 
+},
+{
+ "date":  16464,
+"name": "GSPC.Close",
+"price": 2021.2,
+"rsi": 40.117,
+"ret": 0.0095347 
+},
+{
+ "date":  16465,
+"name": "GSPC.Close",
+"price":   1995,
+"rsi": 44.342,
+"ret": -0.012992 
+},
+{
+ "date":  16468,
+"name": "GSPC.Close",
+"price": 2020.8,
+"rsi": 40.146,
+"ret": 0.012962 
+},
+{
+ "date":  16469,
+"name": "GSPC.Close",
+"price":   2050,
+"rsi": 45.605,
+"ret": 0.014439 
+},
+{
+ "date":  16470,
+"name": "GSPC.Close",
+"price": 2041.5,
+"rsi": 51.033,
+"ret": -0.004156 
+},
+{
+ "date":  16471,
+"name": "GSPC.Close",
+"price": 2062.5,
+"rsi":  49.48,
+"ret": 0.010291 
+},
+{
+ "date":  16472,
+"name": "GSPC.Close",
+"price": 2055.5,
+"rsi": 53.256,
+"ret": -0.0034182 
+},
+{
+ "date":  16475,
+"name": "GSPC.Close",
+"price": 2046.7,
+"rsi": 51.856,
+"ret": -0.0042472 
+},
+{
+ "date":  16476,
+"name": "GSPC.Close",
+"price": 2068.6,
+"rsi": 50.099,
+"ret": 0.010676 
+},
+{
+ "date":  16477,
+"name": "GSPC.Close",
+"price": 2068.5,
+"rsi": 54.275,
+"ret": -2.9034e-05 
+},
+{
+ "date":  16478,
+"name": "GSPC.Close",
+"price": 2088.5,
+"rsi": 54.261,
+"ret": 0.0096445 
+},
+{
+ "date":  16479,
+"name": "GSPC.Close",
+"price":   2097,
+"rsi": 57.984,
+"ret": 0.0040747 
+},
+{
+ "date":  16483,
+"name": "GSPC.Close",
+"price": 2100.3,
+"rsi": 59.498,
+"ret": 0.0015976 
+},
+{
+ "date":  16484,
+"name": "GSPC.Close",
+"price": 2099.7,
+"rsi": 60.108,
+"ret": -0.00031431 
+},
+{
+ "date":  16485,
+"name": "GSPC.Close",
+"price": 2097.4,
+"rsi": 59.916,
+"ret": -0.0010621 
+},
+{
+ "date":  16486,
+"name": "GSPC.Close",
+"price": 2110.3,
+"rsi":  59.23,
+"ret": 0.0061265 
+},
+{
+ "date":  16489,
+"name": "GSPC.Close",
+"price": 2109.7,
+"rsi": 61.935,
+"ret": -0.00030334 
+},
+{
+ "date":  16490,
+"name": "GSPC.Close",
+"price": 2115.5,
+"rsi": 61.715,
+"ret": 0.0027588 
+},
+{
+ "date":  16491,
+"name": "GSPC.Close",
+"price": 2113.9,
+"rsi":     63,
+"ret": -0.00076572 
+},
+{
+ "date":  16492,
+"name": "GSPC.Close",
+"price": 2110.7,
+"rsi": 62.372,
+"ret": -0.001476 
+},
+{
+ "date":  16493,
+"name": "GSPC.Close",
+"price": 2104.5,
+"rsi":  61.11,
+"ret": -0.0029563 
+},
+{
+ "date":  16496,
+"name": "GSPC.Close",
+"price": 2117.4,
+"rsi": 58.558,
+"ret": 0.0061249 
+},
+{
+ "date":  16497,
+"name": "GSPC.Close",
+"price": 2107.8,
+"rsi": 62.081,
+"ret": -0.0045385 
+},
+{
+ "date":  16498,
+"name": "GSPC.Close",
+"price": 2098.5,
+"rsi": 58.114,
+"ret": -0.0043885 
+},
+{
+ "date":  16499,
+"name": "GSPC.Close",
+"price":   2101,
+"rsi": 54.505,
+"ret": 0.0011961 
+},
+{
+ "date":  16500,
+"name": "GSPC.Close",
+"price": 2071.3,
+"rsi": 55.316,
+"ret": -0.014174 
+},
+{
+ "date":  16503,
+"name": "GSPC.Close",
+"price": 2079.4,
+"rsi": 45.053,
+"ret": 0.0039444 
+},
+{
+ "date":  16504,
+"name": "GSPC.Close",
+"price": 2044.2,
+"rsi": 47.908,
+"ret": -0.016961 
+},
+{
+ "date":  16505,
+"name": "GSPC.Close",
+"price": 2040.2,
+"rsi": 38.586,
+"ret": -0.0019177 
+},
+{
+ "date":  16506,
+"name": "GSPC.Close",
+"price": 2065.9,
+"rsi": 37.708,
+"ret": 0.012601 
+},
+{
+ "date":  16507,
+"name": "GSPC.Close",
+"price": 2053.4,
+"rsi": 46.335,
+"ret": -0.0060747 
+},
+{
+ "date":  16510,
+"name": "GSPC.Close",
+"price": 2081.2,
+"rsi":  43.19,
+"ret": 0.013534 
+},
+{
+ "date":  16511,
+"name": "GSPC.Close",
+"price": 2074.3,
+"rsi": 51.104,
+"ret": -0.0033202 
+},
+{
+ "date":  16512,
+"name": "GSPC.Close",
+"price": 2099.5,
+"rsi": 49.266,
+"ret": 0.012158 
+},
+{
+ "date":  16513,
+"name": "GSPC.Close",
+"price": 2089.3,
+"rsi": 55.549,
+"ret": -0.0048726 
+},
+{
+ "date":  16514,
+"name": "GSPC.Close",
+"price": 2108.1,
+"rsi": 52.698,
+"ret": 0.0090128 
+},
+{
+ "date":  16517,
+"name": "GSPC.Close",
+"price": 2104.4,
+"rsi": 57.065,
+"ret": -0.0017457 
+},
+{
+ "date":  16518,
+"name": "GSPC.Close",
+"price": 2091.5,
+"rsi": 55.978,
+"ret": -0.0061394 
+},
+{
+ "date":  16519,
+"name": "GSPC.Close",
+"price": 2061.1,
+"rsi": 52.214,
+"ret": -0.014559 
+},
+{
+ "date":  16520,
+"name": "GSPC.Close",
+"price": 2056.1,
+"rsi": 44.603,
+"ret": -0.0023775 
+},
+{
+ "date":  16521,
+"name": "GSPC.Close",
+"price":   2061,
+"rsi": 43.504,
+"ret": 0.0023686 
+},
+{
+ "date":  16524,
+"name": "GSPC.Close",
+"price": 2086.2,
+"rsi": 44.956,
+"ret": 0.012237 
+},
+{
+ "date":  16525,
+"name": "GSPC.Close",
+"price": 2067.9,
+"rsi": 51.855,
+"ret": -0.0087958 
+},
+{
+ "date":  16526,
+"name": "GSPC.Close",
+"price": 2059.7,
+"rsi": 47.218,
+"ret": -0.0039654 
+},
+{
+ "date":  16527,
+"name": "GSPC.Close",
+"price":   2067,
+"rsi":  45.27,
+"ret": 0.0035297 
+},
+{
+ "date":  16531,
+"name": "GSPC.Close",
+"price": 2080.6,
+"rsi": 47.344,
+"ret": 0.0066088 
+},
+{
+ "date":  16532,
+"name": "GSPC.Close",
+"price": 2076.3,
+"rsi": 51.095,
+"ret": -0.0020619 
+},
+{
+ "date":  16533,
+"name": "GSPC.Close",
+"price": 2081.9,
+"rsi": 49.893,
+"ret": 0.0026825 
+},
+{
+ "date":  16534,
+"name": "GSPC.Close",
+"price": 2091.2,
+"rsi": 51.488,
+"ret": 0.0044575 
+},
+{
+ "date":  16535,
+"name": "GSPC.Close",
+"price": 2102.1,
+"rsi":  54.11,
+"ret": 0.0052029 
+},
+{
+ "date":  16538,
+"name": "GSPC.Close",
+"price": 2092.4,
+"rsi": 57.042,
+"ret": -0.0045813 
+},
+{
+ "date":  16539,
+"name": "GSPC.Close",
+"price": 2095.8,
+"rsi": 53.768,
+"ret": 0.0016298 
+},
+{
+ "date":  16540,
+"name": "GSPC.Close",
+"price": 2106.6,
+"rsi": 54.758,
+"ret": 0.0051482 
+},
+{
+ "date":  16541,
+"name": "GSPC.Close",
+"price":   2105,
+"rsi": 57.835,
+"ret": -0.00077844 
+},
+{
+ "date":  16542,
+"name": "GSPC.Close",
+"price": 2081.2,
+"rsi": 57.199,
+"ret": -0.011311 
+},
+{
+ "date":  16545,
+"name": "GSPC.Close",
+"price": 2100.4,
+"rsi": 48.797,
+"ret": 0.0092351 
+},
+{
+ "date":  16546,
+"name": "GSPC.Close",
+"price": 2097.3,
+"rsi": 54.595,
+"ret": -0.0014806 
+},
+{
+ "date":  16547,
+"name": "GSPC.Close",
+"price":   2108,
+"rsi": 53.538,
+"ret": 0.0050875 
+},
+{
+ "date":  16548,
+"name": "GSPC.Close",
+"price": 2112.9,
+"rsi": 56.638,
+"ret": 0.0023577 
+},
+{
+ "date":  16549,
+"name": "GSPC.Close",
+"price": 2117.7,
+"rsi": 58.043,
+"ret": 0.0022528 
+},
+{
+ "date":  16552,
+"name": "GSPC.Close",
+"price": 2108.9,
+"rsi": 59.399,
+"ret": -0.0041413 
+},
+{
+ "date":  16553,
+"name": "GSPC.Close",
+"price": 2114.8,
+"rsi": 55.819,
+"ret": 0.0027692 
+},
+{
+ "date":  16554,
+"name": "GSPC.Close",
+"price": 2106.9,
+"rsi": 57.649,
+"ret": -0.0037403 
+},
+{
+ "date":  16555,
+"name": "GSPC.Close",
+"price": 2085.5,
+"rsi": 54.364,
+"ret": -0.010129 
+},
+{
+ "date":  16556,
+"name": "GSPC.Close",
+"price": 2108.3,
+"rsi": 46.642,
+"ret": 0.010923 
+},
+{
+ "date":  16559,
+"name": "GSPC.Close",
+"price": 2114.5,
+"rsi": 54.132,
+"ret": 0.0029407 
+},
+{
+ "date":  16560,
+"name": "GSPC.Close",
+"price": 2089.5,
+"rsi": 55.945,
+"ret": -0.011837 
+},
+{
+ "date":  16561,
+"name": "GSPC.Close",
+"price": 2080.1,
+"rsi": 47.742,
+"ret": -0.0044557 
+},
+{
+ "date":  16562,
+"name": "GSPC.Close",
+"price":   2088,
+"rsi": 45.093,
+"ret": 0.0037738 
+},
+{
+ "date":  16563,
+"name": "GSPC.Close",
+"price": 2116.1,
+"rsi": 47.727,
+"ret": 0.013458 
+},
+{
+ "date":  16566,
+"name": "GSPC.Close",
+"price": 2105.3,
+"rsi": 55.883,
+"ret": -0.0050896 
+},
+{
+ "date":  16567,
+"name": "GSPC.Close",
+"price": 2099.1,
+"rsi": 52.501,
+"ret": -0.0029496 
+},
+{
+ "date":  16568,
+"name": "GSPC.Close",
+"price": 2098.5,
+"rsi":   50.6,
+"ret": -0.00030495 
+},
+{
+ "date":  16569,
+"name": "GSPC.Close",
+"price": 2121.1,
+"rsi": 50.398,
+"ret": 0.010779 
+},
+{
+ "date":  16570,
+"name": "GSPC.Close",
+"price": 2122.7,
+"rsi": 56.956,
+"ret": 0.00076841 
+},
+{
+ "date":  16573,
+"name": "GSPC.Close",
+"price": 2129.2,
+"rsi": 57.393,
+"ret": 0.0030479 
+},
+{
+ "date":  16574,
+"name": "GSPC.Close",
+"price": 2127.8,
+"rsi": 59.166,
+"ret": -0.00064337 
+},
+{
+ "date":  16575,
+"name": "GSPC.Close",
+"price": 2125.9,
+"rsi":  58.61,
+"ret": -0.00093052 
+},
+{
+ "date":  16576,
+"name": "GSPC.Close",
+"price": 2130.8,
+"rsi": 57.765,
+"ret": 0.0023379 
+},
+{
+ "date":  16577,
+"name": "GSPC.Close",
+"price": 2126.1,
+"rsi": 59.349,
+"ret": -0.0022339 
+},
+{
+ "date":  16581,
+"name": "GSPC.Close",
+"price": 2104.2,
+"rsi": 57.138,
+"ret": -0.010282 
+},
+{
+ "date":  16582,
+"name": "GSPC.Close",
+"price": 2123.5,
+"rsi":  48.25,
+"ret": 0.0091626 
+},
+{
+ "date":  16583,
+"name": "GSPC.Close",
+"price": 2120.8,
+"rsi": 54.912,
+"ret": -0.0012668 
+},
+{
+ "date":  16584,
+"name": "GSPC.Close",
+"price": 2107.4,
+"rsi":  53.87,
+"ret": -0.0063185 
+},
+{
+ "date":  16587,
+"name": "GSPC.Close",
+"price": 2111.7,
+"rsi": 48.893,
+"ret": 0.0020595 
+},
+{
+ "date":  16588,
+"name": "GSPC.Close",
+"price": 2109.6,
+"rsi": 50.488,
+"ret": -0.0010086 
+},
+{
+ "date":  16589,
+"name": "GSPC.Close",
+"price": 2114.1,
+"rsi": 49.669,
+"ret": 0.0021189 
+},
+{
+ "date":  16590,
+"name": "GSPC.Close",
+"price": 2095.8,
+"rsi":  51.45,
+"ret": -0.0086232 
+},
+{
+ "date":  16591,
+"name": "GSPC.Close",
+"price": 2092.8,
+"rsi": 44.529,
+"ret": -0.0014362 
+},
+{
+ "date":  16594,
+"name": "GSPC.Close",
+"price": 2079.3,
+"rsi": 43.489,
+"ret": -0.0064745 
+},
+{
+ "date":  16595,
+"name": "GSPC.Close",
+"price": 2080.1,
+"rsi": 39.064,
+"ret": 0.00041835 
+},
+{
+ "date":  16596,
+"name": "GSPC.Close",
+"price": 2105.2,
+"rsi":  39.49,
+"ret": 0.012042 
+},
+{
+ "date":  16597,
+"name": "GSPC.Close",
+"price": 2108.9,
+"rsi": 50.263,
+"ret": 0.0017386 
+},
+{
+ "date":  16598,
+"name": "GSPC.Close",
+"price": 2094.1,
+"rsi": 51.618,
+"ret": -0.0069943 
+},
+{
+ "date":  16601,
+"name": "GSPC.Close",
+"price": 2084.4,
+"rsi": 46.159,
+"ret": -0.0046226 
+},
+{
+ "date":  16602,
+"name": "GSPC.Close",
+"price": 2096.3,
+"rsi": 42.949,
+"ret": 0.0056899 
+},
+{
+ "date":  16603,
+"name": "GSPC.Close",
+"price": 2100.4,
+"rsi": 47.744,
+"ret": 0.0019796 
+},
+{
+ "date":  16604,
+"name": "GSPC.Close",
+"price": 2121.2,
+"rsi": 49.348,
+"ret": 0.0099027 
+},
+{
+ "date":  16605,
+"name": "GSPC.Close",
+"price":   2110,
+"rsi": 56.549,
+"ret": -0.0053035 
+},
+{
+ "date":  16608,
+"name": "GSPC.Close",
+"price": 2122.9,
+"rsi": 52.224,
+"ret": 0.0060949 
+},
+{
+ "date":  16609,
+"name": "GSPC.Close",
+"price": 2124.2,
+"rsi": 56.335,
+"ret": 0.00063587 
+},
+{
+ "date":  16610,
+"name": "GSPC.Close",
+"price": 2108.6,
+"rsi": 56.755,
+"ret": -0.0073533 
+},
+{
+ "date":  16611,
+"name": "GSPC.Close",
+"price": 2102.3,
+"rsi": 50.673,
+"ret": -0.0029736 
+},
+{
+ "date":  16612,
+"name": "GSPC.Close",
+"price": 2101.6,
+"rsi":  48.43,
+"ret": -0.00033294 
+},
+{
+ "date":  16615,
+"name": "GSPC.Close",
+"price": 2057.6,
+"rsi": 48.173,
+"ret": -0.020922 
+},
+{
+ "date":  16616,
+"name": "GSPC.Close",
+"price": 2063.1,
+"rsi": 35.469,
+"ret": 0.0026585 
+},
+{
+ "date":  16617,
+"name": "GSPC.Close",
+"price": 2077.4,
+"rsi": 37.671,
+"ret": 0.006936 
+},
+{
+ "date":  16618,
+"name": "GSPC.Close",
+"price": 2076.8,
+"rsi": 43.138,
+"ret": -0.00030802 
+},
+{
+ "date":  16622,
+"name": "GSPC.Close",
+"price": 2068.8,
+"rsi": 42.956,
+"ret": -0.0038618 
+},
+{
+ "date":  16623,
+"name": "GSPC.Close",
+"price": 2081.3,
+"rsi": 40.649,
+"ret": 0.006081 
+},
+{
+ "date":  16624,
+"name": "GSPC.Close",
+"price": 2046.7,
+"rsi": 45.587,
+"ret": -0.016653 
+},
+{
+ "date":  16625,
+"name": "GSPC.Close",
+"price": 2051.3,
+"rsi": 36.561,
+"ret": 0.0022622 
+},
+{
+ "date":  16626,
+"name": "GSPC.Close",
+"price": 2076.6,
+"rsi": 38.318,
+"ret": 0.012338 
+},
+{
+ "date":  16629,
+"name": "GSPC.Close",
+"price": 2099.6,
+"rsi": 46.964,
+"ret": 0.011066 
+},
+{
+ "date":  16630,
+"name": "GSPC.Close",
+"price": 2108.9,
+"rsi": 53.357,
+"ret": 0.0044532 
+},
+{
+ "date":  16631,
+"name": "GSPC.Close",
+"price": 2107.4,
+"rsi": 55.697,
+"ret": -0.00073499 
+},
+{
+ "date":  16632,
+"name": "GSPC.Close",
+"price": 2124.3,
+"rsi": 55.203,
+"ret": 0.0080147 
+},
+{
+ "date":  16633,
+"name": "GSPC.Close",
+"price": 2126.6,
+"rsi": 59.429,
+"ret": 0.0011062 
+},
+{
+ "date":  16636,
+"name": "GSPC.Close",
+"price": 2128.3,
+"rsi": 59.995,
+"ret": 0.00077123 
+},
+{
+ "date":  16637,
+"name": "GSPC.Close",
+"price": 2119.2,
+"rsi": 60.409,
+"ret": -0.0042617 
+},
+{
+ "date":  16638,
+"name": "GSPC.Close",
+"price": 2114.1,
+"rsi": 56.896,
+"ret": -0.0023877 
+} 
+]
+
+spx.forEach(function(d){
+  d.dd=new Date(+d.date * 24 * 60 * 60 * 1000);
+});
+
+spxcf = crossfilter(spx);
+var rsi = spxcf.dimension(function(d){return Math.round(d.rsi);});
+var countByRSI = rsi.group().reduceCount();
+
+var rsi2 = spxcf.dimension(function(d){return Math.round(d.rsi);});
+var perfByRSI = rsi2.group().reduce(
+  function(p,v){
+    ++p.count;
+    p.sum += v.ret;
+    if(p.count!=0) {
+      p.arith = p.sum/p.count;
+      if (isNaN(p.arith)) p.arith = 0;
+    }
+    else {
+      p.arith=0;
+    }
+    return p;
+  },
+  function(p,v){
+    --p.count;
+    p.sum -= v.ret;
+    if(p.count!=0) {
+      p.arith = p.sum/p.count;
+      if (isNaN(p.arith)) p.arith = 0;
+    }
+    else {
+      p.arith=0;
+    }
+    return p;
+  },
+  function(){
+    return {count:0,sum:0,arith:0};//,sum:0,arith:0,geom:0};
+  }
+);
+
+var year = spxcf.dimension(function(d){return d3.time.year(d.dd);});
+var sumByYear = year.group().reduceCount(function(d){return d.rsi});
+
+dc.barChart("#bar-count")
+        .width(500)
+        .height(250)
+        .dimension(rsi)
+        .group(countByRSI)
+        //.valueAccessor(function(p){return p.value.count;})
+        .x(d3.scale.linear().domain([0, 100]))
+        .y(d3.scale.linear().domain([0, 50]))
+        .centerBar(true);
+        
+dc.barChart("#line-perf")
+        .width(500)
+        .height(250)
+        .dimension(rsi2)
+        .group(perfByRSI)
+        .valueAccessor(function(p){return p.value.arith;})
+        .x(d3.scale.linear().domain([0,100]))
+        .y(d3.scale.linear().domain([-0.05, 0.05]))        
+        .elasticY(true)
+        //.xUnits(d3.time.hours)
+        //.renderArea(true);
+        //.xAxis().ticks(5);
+        
+        
+dc.barChart("#line-year")
+        .width(500)
+        .height(250)
+        .dimension(year)
+        .group(sumByYear)
+        .x(d3.time.scale().domain([Date.parse("2015-01-01"),Date.parse("2015-7-23")]))
+        .y(d3.scale.linear().domain([0,300]))
+        //.elasticY(true)
+        .xUnits(d3.time.years)
+        //.colors(["#a60000", "#ff0000", "#ff4040", "#ff7373", "#67e667", "#39e639", "#00cc00"])
+      //  .colorDomain([0, 300])
+      //  .colorAccessor(function (d) {
+      //      console.log(d.value);return d.value;
+      //  })
+        //.renderArea(true);
+        //.xAxis().ticks(5);
+
+
+dc.renderAll();
+</script>
+
+</body>
+</html>

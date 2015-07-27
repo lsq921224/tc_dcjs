@@ -1,0 +1,191 @@
+<html>
+<meta charset="utf-8">
+<head>
+  <link rel="stylesheet" href="css/dc.css"/>
+
+  <script src="js/d3.v3.js"></script>
+  <script src="js/crossfilter.js"></script>
+  <script src="js/dc.js"></script>
+</head>
+
+<body>
+<h1>Metrics</h1>
+
+<div id = "engagement_lines"><p>Engagement Lines</p></div>
+<div id = "agent_lines"><p>Agent Lines</p></div>
+<div id = "agent_script_lines"><p>Agent Script Lines</p></div>
+<div id = "customer_lines"><p>Customer Lines</p></div>
+<div id = "engagement_duration"><p>Engagement Duration (min)</p></div>
+<div id = "agent_max_delay"><p>Agent Max Delay (sec)</p></div>
+<div id = "sales_qualified"><p>Sales Qualified</p></div>
+<div id = "agent_group"><p id="agent_group_text">Agent Group</p></div>
+
+<script>
+var json_raw = 
+<!--begin.rcode results ='asis', message=F, warning=F, error=F, echo=F
+library(rCharts)
+library(solr)
+library(RJSONIO)
+
+url = "http://172.26.129.237/solr/select"
+Date = input$dates
+sDate = Date[1]
+eDate = Date[2]
+startDate = paste0("[",sDate,"T00:00:00Z TO ",eDate,"T23:59:99Z]")
+query = paste0("startDate:",startDate)
+#cat(query)
+client = toString(input$client)
+if (client != "All")
+{
+	clientID = h[[client]]
+	query = paste0(query, " AND siteID:",clientID)
+}
+fields = c("totalChatLines","totalAgentLines","totalAgentScriptLines","totalCustomerLines","engagementDuration","maxResponseTime", "salesQualified", "agentGroupName")
+jsonData = solr_search(q = query, base = url, fl = fields, wt = "json", raw= TRUE, rows = 2147483647)
+cat(jsonData)
+end.rcode-->
+var AGENT_GROUP_FILTER = 500;
+document.getElementById("agent_group_text").innerHTML = "Agent Group (with more than " + AGENT_GROUP_FILTER + " chats)";
+var json_d = json_raw["response"].docs;
+console.log(json_d);
+
+
+var engagement_lines_chart = dc.barChart('#engagement_lines');
+var agent_lines_chart = dc.barChart("#agent_lines");
+var agent_script_lines_chart = dc.barChart("#agent_script_lines");
+var customer_lines_chart = dc.barChart("#customer_lines");
+var engagement_duration_chart = dc.barChart("#engagement_duration");
+var agent_max_delay_chart = dc.barChart("#agent_max_delay");
+var sales_qualified_chart = dc.pieChart("#sales_qualified");
+
+var eng_lines = json_d;
+eng_lines.forEach(function(x){
+//	x.totalChatLines = parseInt(x.totalChatLines);
+//	x.totalAgentLines = parseInt(x.totalAgentLines);
+	if (!x.agentGroupName)
+		x.agentGroupName = "N/A";
+});
+
+var eng_lines_cf = crossfilter(eng_lines);
+var eng_lines_d = eng_lines_cf.dimension(function(d){return d.totalChatLines;});
+var count_by_eng_line = eng_lines_d.group();
+
+
+engagement_lines_chart
+	.width(300)
+	.height(250)
+	.dimension(eng_lines_d)
+	.group(count_by_eng_line)
+	.x(d3.scale.linear().domain([0, 150]))
+	.centerBar(true)	
+	.margins({top:10,right:20,bottom:30,left:50})
+	.elasticY(true);
+
+var agent_lines_d = eng_lines_cf.dimension(function(d){return d.totalAgentLines;});
+var count_by_agent_line = agent_lines_d.group();
+
+agent_lines_chart
+	.width(300)
+	.height(250)
+	.dimension(agent_lines_d)
+	.group(count_by_agent_line)
+	.x(d3.scale.linear().domain([0, 150]))
+	.centerBar(true)	
+	.margins({top:10,right:20,bottom:30,left:50})
+	.elasticY(true);
+
+var agent_script_lines_d = eng_lines_cf.dimension(function(d){return d.totalAgentScriptLines;});
+var count_by_agent_script_line = agent_script_lines_d.group();
+
+agent_script_lines_chart
+	.width(300)
+	.height(250)
+	.dimension(agent_script_lines_d)
+	.group(count_by_agent_script_line)
+	.x(d3.scale.linear().domain([0, 150]))
+	.centerBar(true)	
+	.margins({top:10,right:20,bottom:30,left:50})
+	.elasticY(true);
+
+var customer_lines_d = eng_lines_cf.dimension(function(d){return d.totalCustomerLines;});
+var count_by_customer_line = customer_lines_d.group();
+
+customer_lines_chart
+	.width(300)
+	.height(250)
+	.dimension(customer_lines_d)
+	.group(count_by_customer_line)
+	.x(d3.scale.linear().domain([0, 150]))
+	.centerBar(true)	
+	.margins({top:10,right:20,bottom:30,left:50})
+	.elasticY(true);
+
+var eng_duration_d = eng_lines_cf.dimension(function(d){return d.engagementDuration;});
+var count_by_eng_duration = eng_duration_d.group();
+
+engagement_duration_chart
+	.width(300)
+	.height(250)
+	.dimension(eng_duration_d)
+	.group(count_by_eng_duration)
+	.x(d3.scale.linear().domain([0, 200]))
+	.centerBar(true)	
+	.margins({top:10,right:20,bottom:30,left:50})
+	.elasticY(true);
+
+var agent_max_delay_d = eng_lines_cf.dimension(function(d){return d.maxResponseTime;});
+var count_by_max_delay = agent_max_delay_d.group();
+
+agent_max_delay_chart
+	.width(300)
+	.height(250)
+	.dimension(agent_max_delay_d)
+	.group(count_by_max_delay)
+	.x(d3.scale.linear().domain([0, 200]))
+	.centerBar(true)	
+	.margins({top:10,right:20,bottom:30,left:50})
+	.elasticY(true);
+
+var sales_qualified_d = eng_lines_cf.dimension(function(d){return d.salesQualified;});
+var count_by_qualified = sales_qualified_d.group();
+
+sales_qualified_chart
+	.width(250)
+	.height(250)
+	.slicesCap(2)
+	.innerRadius(50)
+	.dimension(sales_qualified_d)
+	.group(count_by_qualified)
+	.legend(dc.legend());
+
+var agent_group_d = eng_lines_cf.dimension(function(d){return d.agentGroupName;});
+var count_by_agent_group = agent_group_d.group();
+var agent_group_chart = dc.rowChart("#agent_group");
+
+
+function remove_small_agents_groups(source_group) {
+    return {
+        all:function () {
+            return source_group.all().filter(function(d) {
+                return d.value > AGENT_GROUP_FILTER;
+            });
+        }
+    };
+}
+
+var filtered_group = remove_small_agents_groups(count_by_agent_group);
+
+agent_group_chart
+	.width(500)
+	.height(600)
+	.dimension(agent_group_d)
+	.group(filtered_group)
+	.margins({top:10,right:20,bottom:30,left:10})
+	.elasticX(true);
+
+
+dc.renderAll();
+</script>
+
+</body>
+</html>

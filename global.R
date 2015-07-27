@@ -1,0 +1,11 @@
+library(hash)
+library(RMySQL)
+#for (i in dbListConnections(MySQL())) db.close(i)
+mydb = dbConnect(RMySQL::MySQL(), user='test', password='', dbname='configuration', host='172.26.128.56')
+res <- dbSendQuery(mydb, "SELECT siteID, siteName FROM sites where active = 1")
+site_id_names <- dbFetch(res, n = -1)
+site_ids <- c(site_id_names[1]$siteID)
+site_names <- c(site_id_names[2]$siteName)
+h <- hash(site_names, site_ids)
+dbDisconnect(mydb)
+
